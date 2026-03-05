@@ -1,12 +1,12 @@
 package com.shopflow.shopflow.service;
 
+import com.shopflow.shopflow.exception.ResourceNotFoundException;
 import com.shopflow.shopflow.model.Order;
 import com.shopflow.shopflow.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -22,8 +22,9 @@ public class OrderService {
         return orderRepository.findByUserId(userId);
     }
 
-    public Optional<Order> getOrderById(Long id) {
-        return orderRepository.findById(id);
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
     }
 
     public Order createOrder(Order order) {
@@ -33,12 +34,15 @@ public class OrderService {
     }
 
     public Order updateOrderStatus(Long id, Order.OrderStatus status) {
-        Order order = orderRepository.findById(id).orElseThrow();
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
         order.setStatus(status);
         return orderRepository.save(order);
     }
 
     public void deleteOrder(Long id) {
+        orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
         orderRepository.deleteById(id);
     }
 }

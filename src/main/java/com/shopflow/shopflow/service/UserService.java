@@ -1,11 +1,11 @@
 package com.shopflow.shopflow.service;
 
+import com.shopflow.shopflow.exception.ResourceNotFoundException;
 import com.shopflow.shopflow.model.User;
 import com.shopflow.shopflow.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -17,8 +17,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 
     public User createUser(User user) {
@@ -26,11 +27,15 @@ public class UserService {
     }
 
     public User updateUser(Long id, User user) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         user.setId(id);
         return userRepository.save(user);
     }
 
     public void deleteUser(Long id) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         userRepository.deleteById(id);
     }
 }

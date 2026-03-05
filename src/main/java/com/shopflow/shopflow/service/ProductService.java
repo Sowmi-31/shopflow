@@ -1,11 +1,11 @@
 package com.shopflow.shopflow.service;
 
+import com.shopflow.shopflow.exception.ResourceNotFoundException;
 import com.shopflow.shopflow.model.Product;
 import com.shopflow.shopflow.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -17,8 +17,9 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Optional<Product> getProductById(Long id) {
-        return productRepository.findById(id);
+    public Product getProductById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 
     public Product createProduct(Product product) {
@@ -26,11 +27,15 @@ public class ProductService {
     }
 
     public Product updateProduct(Long id, Product product) {
+        productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
         product.setId(id);
         return productRepository.save(product);
     }
 
     public void deleteProduct(Long id) {
+        productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
         productRepository.deleteById(id);
     }
 }
