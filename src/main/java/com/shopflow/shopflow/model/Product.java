@@ -1,7 +1,8 @@
 package com.shopflow.shopflow.model;
 
 import jakarta.persistence.*;
-        import lombok.Data;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
 @Data
 @Entity
@@ -12,8 +13,15 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Product name is required")
     private String name;
+
+    @NotBlank(message = "Description is required")
     private String description;
+
+    @Positive(message = "Price must be greater than 0")
     private double price;
+
+    @Min(value = 0, message = "Quantity cannot be negative")
     private int quantity;
 }
